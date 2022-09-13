@@ -4,6 +4,7 @@ using System.Threading;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Globalization;
+using System.IO;
 
 class Program
 {
@@ -28,6 +29,22 @@ class Program
         });
     }
 
+    static void DotLogo()
+	{
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("██████╗  ██████╗ ████████╗    ██████╗  ██████╗    ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗ ██████╗███████╗");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("██╔══██╗██╔═══██╗╚══██╔══╝    ██╔══██╗██╔════╝    ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("██║  ██║██║   ██║   ██║       ██║  ██║██║         ██████╔╝██████╔╝█████╗  ███████╗█████╗  ██╔██╗ ██║██║     █████╗  ");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("██║  ██║██║   ██║   ██║       ██║  ██║██║         ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██║     ██╔══╝  ");
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("██████╔╝╚██████╔╝   ██║       ██████╔╝╚██████╗    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗");
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.WriteLine("╚═════╝  ╚═════╝    ╚═╝       ╚═════╝  ╚═════╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝");
+    }
+
     // Update user's activity for your game.
     // Party and secrets are vital.
     // Read https://discordapp.com/developers/docs/rich-presence/how-to for more details.
@@ -36,26 +53,274 @@ class Program
         var activityManager = discord.GetActivityManager();
         var lobbyManager = discord.GetLobbyManager();
 
+        string Details = "";
+        string State = "";
+        string LargeImage = "";
+        string LargeText = "";
+        string SmallImage = "";
+        string SmallText = "";
+        bool FileExists = true;
+        bool WriteToConfig = false;
 
 
-        Console.WriteLine("https://docs.google.com/document/d/1Cm3_OXq8CtSphx3RCFwoBjy56vQYzNsXr6h6Bi7dhGU/edit?usp=sharing");
+        Console.Clear();
+
+        string ExeDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+
+        DotLogo();
+        Thread.Sleep(1000);
+
+        Console.WriteLine("");
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("");
+        Console.WriteLine("########### Executing Directory:" + ExeDirectory);
+        Console.WriteLine("");
+        Console.WriteLine("########### Checking For Config.");
+        Console.WriteLine("########### " + ExeDirectory + "config.txt");
+        Console.WriteLine("");
+        Console.WriteLine("");
+        if (File.Exists(ExeDirectory + "config.txt"))
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Config File Exists. Use Previous Config? Y/N");
+            string Choice = Console.ReadLine();
+            if (Choice == "Y" || Choice == "y")
+            {
+                //Load config to array
+                using (var reader = new StreamReader(ExeDirectory + "config.txt"))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+
+                        string[] parts = line.Split(",");
+
+                        //Put back into the said variables
+                        Details = parts[0];
+                        State = parts[1];
+                        LargeImage = parts[2];
+                        LargeText = parts[3];
+                        SmallImage = parts[4];
+                        SmallText = parts[5];
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("########### EXISTING CONFIG ###########");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine();
+                        Console.WriteLine("## Details (Top Text): " + Details);
+                        Console.WriteLine();
+                        Console.WriteLine("## State (Bottom Text): " + State);
+                        Console.WriteLine();
+                        Console.WriteLine("## Large Image (Large Image Name): " + LargeImage);
+                        Console.WriteLine();
+                        Console.WriteLine("## Large Image Text (Lage Image Alt Text): " + LargeText);
+                        Console.WriteLine();
+                        Console.WriteLine("## Small Image (Small Image Name): " + SmallImage);
+                        Console.WriteLine();
+                        Console.WriteLine("## Small Text (Small Image Alt Text): " + SmallText);
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("#######################################");
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Press Enter To Apply!");
+                        Console.ReadLine();
+                        Console.WriteLine("Applying...");
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        DotLogo();
+                        Console.WriteLine("Back To Discord API...");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                }
+            }
+            else
+            {
+                FileExists = false;
+            }
+        }
+		else
+		{
+            FileExists= false;
+		}
+
+        if (!FileExists)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("########### Config doesn't exist...");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("########### Create/Update config? Y/N");
+            string Choice = Console.ReadLine();
+            if(Choice == "Y" || Choice == "y")
+			{
+                using (StreamWriter fs = File.CreateText(ExeDirectory + "config.txt"))
+				{
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.Write("Top Line Text: ");
+                    Details = Console.ReadLine();
+
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.Write("Bottom Line Text: ");
+                    State = Console.ReadLine();
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.WriteLine("Large Image Name:");
+                    LargeImage = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine("");
+                    Console.WriteLine("Large Image Alt Text (On Hover Text):");
+                    LargeText = Console.ReadLine();
+
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.WriteLine("Small Image Name:");
+                    SmallImage = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.WriteLine("Small Image Alt Text (On Hover Text):");
+                    SmallText = Console.ReadLine();
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Saving Config O_O");
+                    Thread.Sleep(1000);
+
+                    fs.WriteLine(Details + "," + State + "," + LargeImage + "," + LargeText + "," + SmallImage + "," + SmallText);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("########### CONFIG ###########");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine();
+                    Console.WriteLine("## Details (Top Text): " + Details);
+                    Console.WriteLine();
+                    Console.WriteLine("## State (Bottom Text): " + State);
+                    Console.WriteLine();
+                    Console.WriteLine("## Large Image (Large Image Name): " + LargeImage);
+                    Console.WriteLine();
+                    Console.WriteLine("## Large Image Text (Lage Image Alt Text): " + LargeText);
+                    Console.WriteLine();
+                    Console.WriteLine("## Small Image (Small Image Name): " + SmallImage);
+                    Console.WriteLine();
+                    Console.WriteLine("## Small Text (Small Image Alt Text): " + SmallText);
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("#######################################");
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Applying...");
+                    Thread.Sleep(1000);
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    DotLogo();
+                    Console.WriteLine("Back To Discord API...");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+
+			}
+			else
+			{
+                Console.WriteLine("########### Set Manually? Y/N");
+                string Choice2 = Console.ReadLine();
+                if(Choice2 == "Y" || Choice2 == "y")
+				{
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.Write("Top Line Text: ");
+                    Details = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.Write("Bottom Line Text: ");
+                    State = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.WriteLine("Large Image Name:");
+                    LargeImage = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine("");
+                    Console.WriteLine("Large Image Alt Text (On Hover Text):");
+                    LargeText = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.WriteLine("Small Image Name:");
+                    SmallImage = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.WriteLine("Small Image Alt Text (On Hover Text):");
+                    SmallText = Console.ReadLine();
+
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine();
+                    Console.WriteLine("Applying...");
+                    Thread.Sleep(1000);
+                    Console.Clear();
+                    DotLogo();
+                    Console.WriteLine("Back To Discord API...");
+
+
+                }
+				else
+				{
+                    Console.WriteLine("Goodbye!");
+                    System.Environment.Exit(1);
+				}
+            }
+            
+        }
+
+        /*
+
+                Console.WriteLine("https://docs.google.com/document/d/1Cm3_OXq8CtSphx3RCFwoBjy56vQYzNsXr6h6Bi7dhGU/edit?usp=sharing");
 
 
 
-        Console.Write("Top Text: ");
-        string Details = Console.ReadLine();
-        Console.Write("Bottom Text: ");
-        string State = Console.ReadLine();
-        
+                Console.Write("Top Text: ");
+                string Details = Console.ReadLine();
+                Console.Write("Bottom Text: ");
+                string State = Console.ReadLine();
 
-        
-        Console.WriteLine("Type large image name (hit enter), then type large text to display while hovering over large image (then hit enter again).");
-        string LargeImage = Console.ReadLine();
-        string LargeText = Console.ReadLine();
-        Console.WriteLine("Type small image name (hit enter), then type small text to display while hovering over small image (then hit enter for the last time).");
-        string SmallImage = Console.ReadLine();
-        string SmallText = Console.ReadLine();
 
+
+                Console.WriteLine("Type large image name (hit enter), then type large text to display while hovering over large image (then hit enter again).");
+                string LargeImage = Console.ReadLine();
+                string LargeText = Console.ReadLine();
+                Console.WriteLine("Type small image name (hit enter), then type small text to display while hovering over small image (then hit enter for the last time).");
+                string SmallImage = Console.ReadLine();
+                string SmallText = Console.ReadLine();
+
+                */
 
 
         int LobbySize = 42069;
